@@ -4,7 +4,7 @@ Install and configure MariaDB server as backend server for wrdoress (hosting dat
 
 <b>#Commands to setup wordpress envirnotment</b>
 
-<b>**#Note:</b>
+*** <b>#Note:</b> ***
   0. Add DNS entries to access wordpress through URL.
   1. Modify wordpress/group_vars/all variable file as per your DNS need and the DNS entry you did, 
   3. Run below commands:
