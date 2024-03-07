@@ -1,0 +1,14 @@
+---
+# tasks file for roles/web
+  - import_tasks: apache.yml
+    tags:
+      - HttpInstall
+
+  - import_tasks: firewall.yml
+    tags:
+      - WebFirewallUpdate
+
+  - import_tasks: websslcert.yml
+    tags:
+      #- never
+      - WebCertificateCreate

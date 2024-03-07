@@ -1,0 +1,7 @@
+---
+  - name: "Configure DB server with httpd and https"
+    hosts: db
+    become: true
+    gather_facts: on
+    roles:
+      - database

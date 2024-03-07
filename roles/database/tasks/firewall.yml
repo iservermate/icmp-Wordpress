@@ -1,0 +1,13 @@
+---
+  - name: Updating firewall rules for {{ item }}
+    ansible.posix.firewalld:
+      service: "{{ item }}"
+      permanent: yes
+      state: enabled
+    loop:
+      - mysql
+    notify: "firewall restart"
+
+  - name: Disable selinux
+    ansible.posix.selinux:
+      state: disabled

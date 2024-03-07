@@ -1,0 +1,8 @@
+---
+# handlers file for roles/vhost
+  - name: Reload Httpd
+    ansible.builtin.service:
+      name: httpd
+      state: restarted
+      enabled: yes
+    listen: "httpd restart"

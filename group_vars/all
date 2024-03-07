@@ -1,0 +1,104 @@
+MyDomain: iservermate.loal
+IcmpUser: iservermate
+
+WordpressNodes: 1  
+DbNodes: 1
+WordpressHostName: icmp-wordpress
+
+#BridgeInterface: "en0: Wi-Fi"      #Enable for Macbook
+BridgeInterface: "en0: Ethernet"    #Enable for iMac 
+IpNw: "192.168.0."                  #Servers Network portion
+WordpressStartIp: 90                #Wordpress IP will be (WordpressStartIP + i) 192.168.0.91 becuase of the for loop in vagrant.j2 template file
+DbStartIp: 91                       #DB will be (DbStartIP +i) 192.168.0.92 becuase of the for loop in vagrant.j2 template file
+
+
+
+
+DbPackages:
+  - gcc
+  - libffi-devel
+  - mailx
+  - mariadb-server
+  - mod_ssl
+  - openssl
+  - openssl-devel
+  - php
+  - php-cli
+  - php-common
+  - php-curl
+  - php-gd
+  - php-intl
+  - php-json
+  - php-ldap
+  - php-mbstring
+  - php-mysqlnd
+  - php-opcache
+  - php-pdo
+  - php-pecl-apcu
+  - php-pecl-zip
+  - php-pear-Net-Socket
+  - php-xml
+  - php-fpm
+  - python3-devel
+  - redhat-rpm-config
+  - python2-PyMySQL.noarch
+  
+#DB vars
+mysql_root_password: password
+db_name: iservermate
+db_user: iservermate
+db_pass: password
+
+WebPackages:
+  - bzip2																				
+  - cargo                                         
+  - gcc                                           
+  - httpd                                         
+  - libffi-devel                                  
+  #- mailx                                         
+  - mod_ssl                                       
+  - mysql                                         
+  - openssl                                       
+  - openssl-devel                                 
+  - php                                           
+  - php-cli                                       
+  - php-common                                    
+  - php-curl                                      
+  - php-gd                                        
+  - php-intl                                      
+  - php-json                                      
+  - php-ldap                                      
+  - php-mbstring                                  
+  - php-mysqlnd                                   
+  - php-opcache                                   
+  - php-pdo                                       
+  - php-pecl-apcu                                 
+  - php-pecl-zip
+  - php-fpm
+  #- php-pear-Net-Socket                                  
+  - php-xml                                       
+  - python3-devel                                 
+  - redhat-rpm-config
+  - python2-cryptography
+  - pyOpenSSL
+  - openssl-libs.x86_64
+
+WebServerIP: 192.168.0.91
+
+#Web server Default SSL certificate variables
+key_size: 4096
+key_type: DSA
+ProvinceName: Mississauga
+country_name: CA
+organization_name: iServermate
+email_address: admin@iservermate.local
+
+#Variables for VirtualHost
+VhostName: test    #Change this variable everytime whenever you want to create new VIRTUALHOST
+VhostDomainName: iservermate.local
+
+#VirtualHost SSL certificate variables
+VhostProvinceName: Mississauga
+Vhostcountry_name: CA
+Vhostorganization_name: iServermate
+Vhostemail_address: admin@iservermate.local

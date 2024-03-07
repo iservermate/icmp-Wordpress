@@ -1,0 +1,81 @@
+---
+  - name: "Install http and required php packages"
+    yum:
+      name: "{{ item }}"
+      state: latest
+    loop: "{{ WebPackages }}"
+
+  - name: update pip3
+    shell: pip3 install -U pip    
+    
+#  - name: Install Required pip modules
+#    pip:
+#      name:
+#        - PyOpenSSL
+#        - cryptography
+#       # - setuptools_rust
+#      state: present
+#      executable: pip
+
+  - name: "Update httpd.conf"
+    ansible.builtin.lineinfile:
+      path: /etc/httpd/conf/httpd.conf
+      backup: yes
+      firstmatch: yes
+      regexp: '^ServerAdmin root@localhost'
+      line: 'ServerAdmin admin@iservermate.local'
+
+  - name: "Update httpd.conf"
+    ansible.builtin.lineinfile:
+      path: /etc/httpd/conf/httpd.conf
+      backup: yes
+      firstmatch: yes
+      regexp: '^#ServerName www.example.com:80'
+      line: 'ServerName {{ inventory_hostname }}:80'
+
+  - name: "Update httpd.conf"
+    ansible.builtin.lineinfile:
+      path: /etc/httpd/conf/httpd.conf
+      firstmatch: yes
+      regexp: '    DirectoryIndex index.html'
+      line: '    DirectoryIndex index.php index.html'
+
+  - name: "Update httpd.conf"
+    ansible.builtin.lineinfile:
+      path: /etc/httpd/conf/httpd.conf
+      firstmatch: yes
+      regexp: '    AllowOverride None'
+      line: '    AllowOverride All'
+
+  - name: "Update ssl.conf"
+    ansible.builtin.lineinfile:
+      path: /etc/httpd/conf.d/ssl.conf
+      backup: yes
+      firstmatch: yes
+      #regexp: '^Listen 443 https'
+      insertafter: '^Listen 443 https'
+      line: LoadModule	ssl_module modules/mod_ssl.so
+
+  - name: "Update ssl.conf"
+    ansible.builtin.lineinfile:
+      path: /etc/httpd/conf.d/ssl.conf
+      backup: yes
+      firstmatch: yes
+      regexp: '^#ServerName www.example.com:443'
+      line: 'ServerName {{ inventory_hostname }}:443'
+
+  - name: "Redirect http traffic to https"
+    ansible.builtin.template:
+      src: redirect_http.conf.j2
+      dest: "/etc/httpd/conf.d/redirect_http.conf"
+      mode: '0644'
+    notify: "httpd restart"
+
+  - name: "Start http services"
+    ansible.builtin.service:
+      name: "{{ item }}"
+      state: started
+      enabled: yes
+    loop:
+      - httpd
+    tags: HttpRestart

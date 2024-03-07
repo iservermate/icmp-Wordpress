@@ -1,0 +1,15 @@
+---
+# handlers file for roles/web
+  - name: Reload firewalld
+    ansible.builtin.service:
+      name: firewalld
+      state: reloaded
+      enabled: yes
+    listen: "firewall restart"
+
+  - name: Reload Httpd
+    ansible.builtin.service:
+      name: httpd
+      state: restarted
+      enabled: yes
+    listen: "httpd restart"

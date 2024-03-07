@@ -1,0 +1,20 @@
+---
+  - name: Copy roundcube schema file on DB server
+    copy:
+      src: ./files/rcubeschema.sql
+      dest: /tmp
+      owner: root
+      group: root
+      mode: 0664
+    run_once: true
+    
+  - name: Import roundcube db schema file
+    mysql_db:
+      name: "{{ db_name }}"
+      state: import
+      target: /tmp/rcubeschema.sql
+    tags:
+      - initializedb
+    #notify: "mariadb restart"
+    ignore_errors: true
+    run_once: true

@@ -1,0 +1,70 @@
+---
+  #- name: Update vhost.j2 templte file
+  - name: Create Vhost (site-available & site-enabled )directories
+    file:
+      path: /etc/httpd/{{ item }}
+      state: directory
+    with_items:
+      - sites-enabled 
+      - sites-available
+
+  - name: Include (site-enbled directory to httpd.conf
+    ansible.builtin.lineinfile:
+      path: /etc/httpd/conf/httpd.conf
+      line: 'IncludeOptional sites-enabled/*.conf'
+
+  - name: Copy {{ VhostName }} virtualhost template file on webserver
+    template:
+      src: vhost.j2
+      dest: "/etc/httpd/sites-available/{{ VhostName }}.{{ VhostDomainName }}.conf"
+      #mode: '0755'
+
+  - name: Enable site/virtualhost
+    file:
+      src: /etc/httpd/sites-available/{{ VhostName }}.{{ VhostDomainName }}.conf
+      dest: /etc/httpd/sites-enabled/{{ VhostName }}.{{ VhostDomainName }}.conf
+      state: link
+
+  - name: Create virtualhost DocmentRoot
+    file:
+      path: /var/www/{{ VhostName }}
+      state: directory
+      mode: 0744
+
+  - name: Create virtualhost log directory
+    file:
+      path: /var/www/{{ VhostName }}/log/
+      state: directory
+      mode: 0744
+
+  - name: Create index.html file in virtualhost directory
+    file:
+      path: /var/www/{{ VhostName }}/index.html
+      state: touch
+
+  - name: Updte content of {{ VhostName }}/index.html
+    copy: 
+      content: "{{ VhostName }}.{{ VhostDomainName }}"
+      dest: /var/www/{{ VhostName }}/index.html
+
+  - name: Generate an OpenSSL private key
+    openssl_privatekey:
+      path: "/etc/pki/tls/certs/{{ VhostName }}.{{ VhostDomainName }}.pem"
+
+  - name: Generate an OpenSSL Certificate Signing Request with Subject information
+    openssl_csr:
+      path: "/etc/pki/tls/certs/{{ VhostName }}.{{ VhostDomainName }}.csr"
+      privatekey_path: "/etc/pki/tls/certs/{{ VhostName }}.{{ VhostDomainName }}.pem"
+      state_or_province_name: "{{ VhostProvinceName }}"
+      country_name: "{{ Vhostcountry_name }}"
+      organization_name: "{{ Vhostorganization_name }}"
+      email_address: "{{ Vhostemail_address }}"
+      common_name: "{{ VhostName }}.{{ VhostDomainName }}"
+
+  - name: Generate a Self Signed OpenSSL certificate
+    openssl_certificate:
+      path: "/etc/pki/tls/certs/{{ VhostName }}.{{ VhostDomainName }}.crt"
+      privatekey_path: "/etc/pki/tls/certs/{{ VhostName }}.{{ VhostDomainName }}.pem"
+      csr_path: "/etc/pki/tls/certs/{{ VhostName }}.{{ VhostDomainName }}.csr"
+      provider: selfsigned
+    notify: "httpd restart"

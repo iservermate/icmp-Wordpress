@@ -1,0 +1,44 @@
+---
+  - name: "Install MySQL packages"
+    yum:
+      name: "{{ item }}"
+      state: latest
+    loop: "{{ DbPackages }}"
+
+  - name: update pip3
+    shell: pip3 install -U pip    
+
+  - name: Install Required MySQL pip modules
+    pip:
+      name:
+        - PyMySQL
+      state: present
+      executable: pip3
+  
+
+  # - name: Removing mysql ib_buffer_pool file
+  #   command: rm -rf /var/lib/mysql/ib_buffer_pool
+
+  - name: start mariadb
+    service:
+      name: mariadb
+      enabled: true
+      state: started
+
+  - name: mysql_root_password
+    mysql_user:
+      login_user: root
+      login_password: "{{ mysql_root_password }}"
+      user: root
+      check_implicit_admin: true
+      password: "{{ mysql_root_password }}"
+      host: localhost
+    notify: "mariadb restart"
+  
+  - name: Copy .my.cnf file with root password credentials
+    template: 
+      src: templates/.my.cnf.j2 
+      dest: /root/.my.cnf
+      owner: root
+      mode: 0600
+    notify: "mariadb restart"

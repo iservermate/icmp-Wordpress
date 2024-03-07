@@ -1,0 +1,34 @@
+---
+  - name: Generate an OpenSSL private key
+    openssl_privatekey:
+      path: "/etc/pki/tls/certs/{{ inventory_hostname }}.pem"
+
+  - name: Generate an OpenSSL Certificate Signing Request with Subject information
+    openssl_csr:
+      path: "/etc/pki/tls/certs/{{ inventory_hostname }}.csr"
+      privatekey_path: "/etc/pki/tls/certs/{{ inventory_hostname }}.pem"
+      state_or_province_name: "{{ ProvinceName }}"
+      country_name: "{{ country_name }}"
+      organization_name: "{{ organization_name }}"
+      email_address: "{{ email_address }}"
+      common_name: "{{ inventory_hostname }}"
+
+  - name: Generate a Self Signed OpenSSL certificate
+    openssl_certificate:
+      path: "/etc/pki/tls/certs/{{ inventory_hostname }}.crt"
+      privatekey_path: "/etc/pki/tls/certs/{{ inventory_hostname }}.pem"
+      csr_path: "/etc/pki/tls/certs/{{ inventory_hostname }}.csr"
+      provider: selfsigned
+
+  - name: Add SSL certificate file path
+    ansible.builtin.lineinfile:
+      path: /etc/httpd/conf.d/ssl.conf
+      regexp: '^SSLCertificateFile /etc/pki/tls/certs/localhost.crt'
+      line: SSLCertificateFile /etc/pki/tls/certs/{{ inventory_hostname }}.crt
+
+  - name: Add SSL certificate key file path
+    ansible.builtin.lineinfile:
+      path: /etc/httpd/conf.d/ssl.conf
+      regexp: '^SSLCertificateKeyFile /etc/pki/tls/private/localhost.key'
+      line: SSLCertificateKeyFile /etc/pki/tls/certs/{{ inventory_hostname }}.pem
+    notify: "httpd restart"

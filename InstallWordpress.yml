@@ -1,0 +1,54 @@
+---
+  - name: "Configure WEB server with httpd and https"
+    hosts: wp
+    become: true
+    gather_facts: on
+    tasks:
+      - name: Create virtualhost on webserver
+        include_role:
+          name: vhost
+
+      - name: Download and Extract WorPress
+        unarchive:
+          src: https://wordpress.org/latest.tar.gz
+          dest: /var/www/{{ VhostName }}
+          remote_src: yes
+          extra_opts: [--strip-components=1]
+          owner: apache
+          group: apache
+          mode: 0744
+
+      - name: Install remi repo.
+        yum:
+          name: http://rpms.remirepo.net/enterprise/remi-release-{{ ansible_distribution_major_version }}.rpm
+          #name: http://rpms.remirepo.net/enterprise/remi-release-8.rpm
+          state: present
+
+      - name: Import remi GPG key.
+        rpm_key:
+          key: http://rpms.remirepo.net/RPM-GPG-KEY-remi
+          state: present
+
+      - name: Enable php82 repo
+        ini_file:
+          dest: /etc/yum.repos.d/remi-php82.repo
+          section: remi-php82
+          option: enabled
+          value: 1
+
+      - name: Install php82
+        yum:
+          enablerepo: "remi-php82"
+          name: php
+          state: latest
+          update_cache: yes
+
+  - name: "Configure DB server for {{ VhostName }} portal"
+    hosts: db
+    become: true
+    gather_facts: on
+    tasks:
+      - name: Create database
+        include_role:
+          name: database
+          tasks_from: newdatabase

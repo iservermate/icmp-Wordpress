@@ -1,0 +1,6 @@
+---
+# tasks file for roles/vhost
+  - import_tasks: vhost.yml
+    tags:
+      #- never
+      - VirtualhostCreate

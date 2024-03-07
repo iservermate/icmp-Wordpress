@@ -1,0 +1,11 @@
+<VirtualHost *:443>
+  ServerName {{ inventory_hostname }}
+  ServerAlias {{ VhostName }}.{{ VhostDomainName }}
+  DocumentRoot /var/www/{{ VhostName }}
+  ErrorLog /var/www/{{ VhostName }}/log/error.log
+  CustomLog /var/www/{{ VhostName }}/log/requests.log combined
+#Certificate
+  SSLCertificateFile /etc/pki/tls/certs/{{ VhostName }}.{{ VhostDomainName }}.crt
+  SSLCertificateKeyFile /etc/pki/tls/certs/{{ VhostName }}.{{ VhostDomainName }}.pem
+  SSLEngine on
+</VirtualHost>

@@ -1,0 +1,18 @@
+---
+# tasks file for roles/database
+  - import_tasks: mariadb.yml
+    tags:
+      - mariadbInstall
+
+  - import_tasks: firewall.yml
+    tags:
+      - mariadbFirewall
+
+  - import_tasks: newdatabase.yml
+    tags:
+      #- never
+      - mariadbNewDb
+
+  - import_tasks: rcubeschema.yml
+    tags:
+      - mariadbRcubeShema

@@ -1,0 +1,4 @@
+<VirtualHost _default_:80>
+        Servername {{ inventory_hostname }}.{{ VhostDomainName }}
+        Redirect permanent / https://{{ inventory_hostname }}.{{ VhostDomainName }}/
+</VirtualHost>

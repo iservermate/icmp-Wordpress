@@ -1,0 +1,7 @@
+---
+  - name: "Configure WEB server with httpd and https"
+    hosts: wp
+    become: true
+    gather_facts: on
+    roles:
+      - web
